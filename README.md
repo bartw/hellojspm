@@ -77,3 +77,88 @@ angular.module('app', []);
 ### test it
 
 python -m SimpleHTTPServer
+
+## unit testing
+
+### create a test/hello.spec.js test
+
+```js
+'use strict';
+
+import Hello from '../src/hello';
+
+describe('hello test', () => {
+
+    it('should return Hello Jspm', function () {
+        var name = 'jspm';
+        var hello = new Hello(name);
+        
+        expect(hello.speak()).toEqual("Hello " + name);
+    });
+});
+```
+
+## install karma
+
+```shell
+npm install -g karma-cli
+npm install --save-dev phantomjs jasmine jasmine-core karma karma-jasmine karma-phantomjs-launcher karma-jspm
+```
+
+## setup karma in karma.conf.js
+
+```js
+module.exports = function (config) {
+    'use strict';
+    
+    config.set({
+        autoWatch: true,
+        singleRun: true,
+        frameworks: ['jspm', 'jasmine'],
+        jspm: {
+            config: 'config.js',
+            loadFiles: ['test/**/*.js'],
+            serveFiles: ['src/**/*.js']
+        },
+        proxies: {
+            '/test/': '/base/test/',
+            '/src/': '/base/src/',
+            '/jspm_packages/': '/base/jspm_packages/'
+        },
+        browsers: ['PhantomJS'],
+        reporters: ['progress']
+    });
+};
+```
+
+## run tests
+
+```shell
+karma start
+```
+
+Test should fail
+
+## implement src/hello.js
+
+```js
+class Hello {
+    constructor(name) {
+        this.name = name;
+    }
+    
+    speak() {
+        return 'Hello ' + this.name;
+    }
+}
+
+export default Hello;
+```
+
+## run tests
+
+```shell
+karma start
+```
+
+Test should succeed
