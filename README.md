@@ -54,10 +54,10 @@ jspm install angular
 
 ```js
 import angular from 'angular';  
-import 'modules/application/application-module';
+import 'src/app.module';
 
 angular.element(document).ready(function() {  
-  angular.bootstrap(document, ['Application']);
+  angular.bootstrap(document, ['app']);
 });
 ```
 
@@ -98,14 +98,14 @@ describe('hello test', () => {
 });
 ```
 
-## install karma
+### install karma
 
 ```shell
 npm install -g karma-cli
 npm install --save-dev phantomjs jasmine jasmine-core karma karma-jasmine karma-phantomjs-launcher karma-jspm
 ```
 
-## setup karma in karma.conf.js
+### setup karma in karma.conf.js
 
 ```js
 module.exports = function (config) {
@@ -131,7 +131,7 @@ module.exports = function (config) {
 };
 ```
 
-## run tests
+### run tests
 
 ```shell
 karma start
@@ -139,7 +139,7 @@ karma start
 
 Test should fail
 
-## implement src/hello.js
+### implement src/hello.js
 
 ```js
 class Hello {
@@ -155,10 +155,83 @@ class Hello {
 export default Hello;
 ```
 
-## run tests
+### run tests
 
 ```shell
 karma start
 ```
 
 Test should succeed
+
+## component
+
+### create src/layout folder with the component files and layout module definition
+
+app-header-template.html
+
+```html
+<h1>{{$ctrl.appTitle}}</h1>
+```
+
+allow jspm to import text
+
+```shell
+jspm install text
+```
+
+app-header-component.js
+
+```js
+import appHeaderTemplate from './app-header-template.html!text';
+
+export default {
+    bindings: {
+        appTitle: '@'
+    },
+    template: appHeaderTemplate
+};
+```
+
+layout-module.js
+
+```js
+import angular from 'angular';
+import appHeaderComponent from './app-header-component';
+
+const dependencies = [];
+
+export default angular
+    .module('app.layout', dependencies)
+    .component('appHeader', appHeaderComponent);
+```
+
+### import the component in the app module
+
+```js
+import angular from 'angular';
+import layoutModule from './layout/layout-module';
+
+const dependencies = [
+    layoutModule.name
+];
+
+export default angular.module('app', dependencies);
+```
+
+### use the component in index.html
+
+replace
+
+```html
+<h1>Hello jspm</h1>
+```
+
+with
+
+```html
+<app-header app-title="Hello jspm"></app-header>
+```
+
+### test it
+
+python -m SimpleHTTPServer
